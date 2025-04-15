@@ -7,16 +7,16 @@ import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-java";
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/theme-monokai";
-import { CompilerProps, TestResult } from "@/utils/componentTypes";
 import { Button, Select } from "antd";
 import { DownOutlined } from "@ant-design/icons";
+import { CompilerProps, TestResult } from "@/utils/componentTypes";
 
 type Language = "javascript" | "python" | "java" | "c_cpp";
 
 const Compiler = ({
   testCases,
   defaultCode,
-  onCodeChange, 
+  onCodeChange,
 }: CompilerProps & {
   onCodeChange?: (code: string, testResults: TestResult[]) => void;
 }) => {
@@ -50,7 +50,7 @@ const Compiler = ({
   };
 
   return (
-    <div className="p-5 flex flex-col gap-4">
+    <div className="p-5 flex flex-col gap-4 border rounded-xl mt-5">
       <div>
         <Select
           value={language}

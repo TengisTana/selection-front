@@ -1,8 +1,8 @@
 "use client";
 
-import AnswerCard from "@/components/AnswerCard";
-import { Button, Divider } from "antd";
 import { useCallback, useEffect, useState } from "react";
+import { Button, Divider } from "antd";
+import AnswerCard from "@/components/AnswerCard";
 
 const testData = {
   title: "Хөгжүүлэгчийн шалгалтын тест",
@@ -140,10 +140,10 @@ const exampleAnswerCards = [
 ];
 
 export default function Home() {
-  const [step, setStep] = useState<"START" | "TEST" | "END">("START");
-  const [answers, setAnswers] = useState<{ [key: number]: any }>({});
-  const [timeLeft, setTimeLeft] = useState(testData.time * 60);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(testData.time * 60);
+  const [answers, setAnswers] = useState<{ [key: number]: any }>({});
+  const [step, setStep] = useState<"START" | "TEST" | "END">("START");
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
