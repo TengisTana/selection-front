@@ -7,6 +7,7 @@ import { TestProps } from "@/utils/utils";
 const EditorPage = () => {
   const [form] = Form.useForm();
   const [test, setTest] = useState<TestProps | null>(null);
+  console.log(test);
 
   const addQuestion = useCallback(() => {
     setTest((prevTest) => ({

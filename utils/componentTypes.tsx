@@ -54,3 +54,8 @@ export interface OptionCardProps {
   test: TestProps | null;
 }
 
+export interface QuestionCardProps {
+  id: number;
+  test: TestProps;
+  setTest: React.Dispatch<React.SetStateAction<TestProps | null>>;
+}

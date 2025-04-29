@@ -8,6 +8,7 @@ export interface DefaultCodeProps {
   DefaultCodeId?: string;
   CodeLanguage?: string;
   CodeText?: string;
+  CodeOrder?: number;
 }
 
 export interface OptionProps {

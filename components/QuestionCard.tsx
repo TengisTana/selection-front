@@ -1,6 +1,8 @@
+"use client";
 import { useCallback } from "react";
 import { Button, Card, Form, Input } from "antd";
 import OptionCard from "./OptionCard";
+import DefaultCodeEditor from "./DefaultCodeEditor";
 import { QuestionCardProps } from "@/utils/componentTypes";
 
 const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
@@ -83,6 +85,8 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
         ))}
         <Button onClick={addOption}>Add Option</Button>
       </div>
+
+      <DefaultCodeEditor test={test} setTest={setTest} questionIndex={id} />
     </Card>
   );
 };
