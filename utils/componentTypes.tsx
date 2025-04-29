@@ -1,3 +1,5 @@
+import { OptionProps, TestProps } from "./utils";
+
 export interface TestCase {
   input: string;
   expectedOutput: string;
@@ -11,13 +13,13 @@ export interface TestResult {
 }
 
 export interface CompilerProps {
-    testCases: TestCase[];
-    defaultCode?: {
-      javascript?: string;
-      python?: string;
-      java?: string;
-      c_cpp?: string;
-    };
+  testCases: TestCase[];
+  defaultCode?: {
+    javascript?: string;
+    python?: string;
+    java?: string;
+    c_cpp?: string;
+  };
 }
 
 export interface AnswerCardProps {
@@ -37,3 +39,18 @@ export interface AnswerCardProps {
     c_cpp?: string;
   };
 }
+
+export interface QuestionCardProps {
+  id: number;
+  test: TestProps;
+  setTest: React.Dispatch<React.SetStateAction<TestProps | null>>;
+}
+
+export interface OptionCardProps {
+  option: OptionProps;
+  questionIndex: number;
+  optionIndex: number;
+  setTest: React.Dispatch<React.SetStateAction<TestProps | null>>;
+  test: TestProps | null;
+}
+
