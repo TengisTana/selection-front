@@ -1,6 +1,7 @@
-import { Form, Input, Checkbox, Space, Button } from "antd";
+import { Input, Checkbox, Space } from "antd";
 import { OptionCardProps } from "@/utils/componentTypes";
 import { OptionProps } from "@/utils/utils";
+import { DeleteOutlined } from "@ant-design/icons";
 
 const OptionCard = ({
   option,
@@ -8,17 +9,25 @@ const OptionCard = ({
   optionIndex,
   test,
   setTest,
-}: OptionCardProps) => {
+  questionType,
+}: OptionCardProps & { questionType: string }) => {
   const updateOption = (key: keyof OptionProps, value: any) => {
     const updatedQuestions = [...(test?.Questions || [])];
     const updatedOptions = [
       ...(updatedQuestions[questionIndex]?.Options || []),
     ];
 
-    updatedOptions[optionIndex] = {
-      ...updatedOptions[optionIndex],
-      [key]: value,
-    };
+    if (key === "IsCorrect" && questionType === "SINGLE_CHOICE" && value) {
+      // For SINGLE_CHOICE, only one option can be correct
+      updatedOptions.forEach((opt, idx) => {
+        opt.IsCorrect = idx === optionIndex ? value : false;
+      });
+    } else {
+      updatedOptions[optionIndex] = {
+        ...updatedOptions[optionIndex],
+        [key]: value,
+      };
+    }
 
     updatedQuestions[questionIndex].Options = updatedOptions;
     setTest({ ...test, Questions: updatedQuestions });
@@ -41,24 +50,20 @@ const OptionCard = ({
   };
 
   return (
-    <div className="mb-2 p-2 border rounded">
-      <Space direction="vertical" style={{ width: "100%" }}>
-        <Input
-          placeholder="Option text"
-          value={option.OptionText}
-          onChange={(e) => updateOption("OptionText", e.target.value)}
-        />
-        <Space>
-          <Checkbox
-            checked={option.IsCorrect}
-            onChange={(e) => updateOption("IsCorrect", e.target.checked)}
-          >
-            Correct
-          </Checkbox>
-          <Button danger onClick={deleteOption}>
-            Delete
-          </Button>
-        </Space>
+    <div className="mb-2 p-2 border rounded flex flex-row gap-4">
+      <Input
+        placeholder="Option text"
+        value={option.OptionText}
+        onChange={(e) => updateOption("OptionText", e.target.value)}
+      />
+      <Space>
+        <Checkbox
+          checked={option.IsCorrect}
+          onChange={(e) => updateOption("IsCorrect", e.target.checked)}
+        >
+          Correct
+        </Checkbox>
+        <DeleteOutlined onClick={deleteOption} className="hover:text-red-400" />
       </Space>
     </div>
   );

@@ -1,16 +1,34 @@
 "use client";
 import { useCallback } from "react";
-import { Button, Card, Form, Input } from "antd";
+import { Button, Card, Form, Input, Select } from "antd";
 import OptionCard from "./OptionCard";
 import TestCaseCard from "./TestCaseCard";
 import DefaultCodeEditor from "./DefaultCodeEditor";
 import { QuestionCardProps } from "@/utils/componentTypes";
 import { DefaultCodeProps } from "@/utils/utils";
 
+const { Option } = Select;
+
 const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
   const question = test?.Questions?.[id];
-  const { Title, Descr, QuestionText, Options, TestCases, DefaultCodes } =
+  const { Title, Descr, QuestionText, Options, TestCases, DefaultCodes, QuestionType } =
     question || {};
+
+  const updateQuestionType = (value: string) => {
+    const updatedQuestions = [...(test?.Questions || [])];
+    updatedQuestions[id] = {
+      ...updatedQuestions[id],
+      QuestionType: value,
+      // Reset options' IsCorrect for SINGLE_CHOICE to ensure only one is correct
+      Options: value === "SINGLE_CHOICE"
+        ? updatedQuestions[id].Options?.map((opt, index) => ({
+            ...opt,
+            IsCorrect: index === 0 ? opt.IsCorrect : false,
+          }))
+        : updatedQuestions[id].Options,
+    };
+    setTest({ ...test, Questions: updatedQuestions });
+  };
 
   const addOption = useCallback(() => {
     const updatedQuestions = [...(test?.Questions || [])];
@@ -117,6 +135,17 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
         </Button>
       }
     >
+      <Form.Item label="Question Type">
+        <Select
+          value={QuestionType || "SINGLE_CHOICE"}
+          onChange={updateQuestionType}
+          placeholder="Select question type"
+        >
+          <Option value="SINGLE_CHOICE">Single Choice</Option>
+          <Option value="MULTI_CHOICE">Multiple Choice</Option>
+          <Option value="CODE">Code</Option>
+        </Select>
+      </Form.Item>
       <Form.Item label="Question Title">
         <Input
           value={Title || ""}
@@ -159,43 +188,48 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
           placeholder="Question Text"
         />
       </Form.Item>
-      <div className="mb-2">
-        <strong>Options:</strong>
-        {Options?.map((option, index) => (
-          <OptionCard
-            key={index}
-            option={option}
+      {QuestionType !== "CODE" && (
+        <div className="mb-2">
+          <strong>Options:</strong>
+          {Options?.map((option, index) => (
+            <OptionCard
+              key={index}
+              option={option}
+              questionIndex={id}
+              optionIndex={index}
+              setTest={setTest}
+              test={test}
+              questionType={QuestionType || "SINGLE_CHOICE"}
+            />
+          ))}
+          <Button onClick={addOption}>Add Option</Button>
+        </div>
+      )}
+      {QuestionType === "CODE" && (
+        <>
+          <DefaultCodeEditor
+            defaultCodes={DefaultCodes || []}
             questionIndex={id}
-            optionIndex={index}
-            setTest={setTest}
-            test={test}
+            addDefaultCode={addDefaultCode}
+            updateDefaultCode={updateDefaultCode}
+            deleteDefaultCode={deleteDefaultCode}
           />
-        ))}
-        <Button onClick={addOption}>Add Option</Button>
-      </div>
-
-      <DefaultCodeEditor
-        defaultCodes={DefaultCodes || []}
-        questionIndex={id}
-        addDefaultCode={addDefaultCode}
-        updateDefaultCode={updateDefaultCode}
-        deleteDefaultCode={deleteDefaultCode}
-      />
-
-      <div className="mb-2">
-        <strong>Test Cases:</strong>
-        {TestCases?.map((testCase, index) => (
-          <TestCaseCard
-            key={index}
-            testCase={testCase}
-            questionIndex={id}
-            testCaseIndex={index}
-            setTest={setTest}
-            test={test}
-          />
-        ))}
-        <Button onClick={addTestCase}>Add Test Case</Button>
-      </div>
+          <div className="mb-2">
+            <strong>Test Cases:</strong>
+            {TestCases?.map((testCase, index) => (
+              <TestCaseCard
+                key={index}
+                testCase={testCase}
+                questionIndex={id}
+                testCaseIndex={index}
+                setTest={setTest}
+                test={test}
+              />
+            ))}
+            <Button onClick={addTestCase}>Add Test Case</Button>
+          </div>
+        </>
+      )}
     </Card>
   );
 };

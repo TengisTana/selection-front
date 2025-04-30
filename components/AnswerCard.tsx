@@ -1,7 +1,7 @@
-import { AnswerCardProps } from "@/utils/componentTypes";
-import { Checkbox, Input, Card, ConfigProvider, Radio } from "antd";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { Checkbox, Input, Card, Radio } from "antd";
 import Compiler from "./Compiler";
+import { AnswerCardProps } from "@/utils/componentTypes";
 
 const { TextArea } = Input;
 
@@ -17,8 +17,8 @@ const AnswerCard = ({
   defaultCode,
   onAnswerChange,
 }: AnswerCardProps & { onAnswerChange?: (answer: any) => void }) => {
-  const [checkedValues, setCheckedValues] = useState<number[]>([]);
   const [textValue, setTextValue] = useState<string>("");
+  const [checkedValues, setCheckedValues] = useState<number[]>([]);
   const [radioValue, setRadioValue] = useState<number | undefined>(undefined);
 
   const radioOptions = options

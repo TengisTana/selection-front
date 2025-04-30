@@ -14,18 +14,26 @@ interface TestResult {
 }
 
 export async function POST(req: NextRequest) {
-  const { code, language, testCases }: { code: string; language: string; testCases: TestCase[] } = await req.json();
+  const {
+    code,
+    language,
+    testCases,
+  }: { code: string; language: string; testCases: TestCase[] } =
+    await req.json();
 
   const languageMap: Record<string, number> = {
     javascript: 63,
-    python: 71, 
-    java: 62,     
-    c_cpp: 54,    
+    python: 71,
+    java: 62,
+    c_cpp: 54,
   };
 
   const languageId = languageMap[language];
   if (!languageId) {
-    return NextResponse.json({ error: "Unsupported language" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Unsupported language" },
+      { status: 400 }
+    );
   }
 
   try {
@@ -41,7 +49,8 @@ export async function POST(req: NextRequest) {
         },
         {
           headers: {
-            "X-RapidAPI-Key": "467a2a3afbmsh20ad65adb6ce0c1p1bc937jsn1c15b9b8cd6d",
+            "X-RapidAPI-Key":
+              "467a2a3afbmsh20ad65adb6ce0c1p1bc937jsn1c15b9b8cd6d",
             "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
             "Content-Type": "application/json",
           },
@@ -49,7 +58,7 @@ export async function POST(req: NextRequest) {
       );
 
       const token: string = response.data.token;
-      
+
       let result;
       for (let i = 0; i < 10; i++) {
         await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1s
@@ -57,7 +66,8 @@ export async function POST(req: NextRequest) {
           `https://judge0-ce.p.rapidapi.com/submissions/${token}`,
           {
             headers: {
-              "X-RapidAPI-Key": "467a2a3afbmsh20ad65adb6ce0c1p1bc937jsn1c15b9b8cd6d",
+              "X-RapidAPI-Key":
+                "467a2a3afbmsh20ad65adb6ce0c1p1bc937jsn1c15b9b8cd6d",
               "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com",
             },
           }
@@ -80,7 +90,10 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("Error:", error.response?.data || error.message);
     return NextResponse.json(
-      { error: "Execution failed", details: error.response?.data || error.message },
+      {
+        error: "Execution failed",
+        details: error.response?.data || error.message,
+      },
       { status: 500 }
     );
   }
