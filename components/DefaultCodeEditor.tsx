@@ -1,10 +1,7 @@
 "use client";
-import { useCallback, useState } from "react";
-import { Button, Card, Select } from "antd";
+import { Card, Select, Button } from "antd";
 import AceEditor from "react-ace";
-import { TestProps, DefaultCodeProps } from "@/utils/utils";
-
-// Import necessary Ace editor modes and theme
+import { DefaultCodeProps } from "@/utils/utils";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-java";
@@ -12,9 +9,15 @@ import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/theme-monokai";
 
 interface DefaultCodeEditorProps {
-  test: TestProps;
-  setTest: (test: TestProps) => void;
+  defaultCodes: DefaultCodeProps[];
   questionIndex: number;
+  addDefaultCode: () => void;
+  updateDefaultCode: (
+    codeIndex: number,
+    field: keyof DefaultCodeProps,
+    value: string
+  ) => void;
+  deleteDefaultCode: (codeIndex: number) => void;
 }
 
 const languageOptions = [
@@ -24,77 +27,15 @@ const languageOptions = [
   { value: "c_cpp", label: "C/C++" },
 ];
 
-const DefaultCodeEditor = ({ test, setTest, questionIndex }: DefaultCodeEditorProps) => {
-  const question = test?.Questions?.[questionIndex];
-  const [defaultCodes, setDefaultCodes] = useState<DefaultCodeProps[]>(
-    question?.DefaultCodes || []
-  );
-
-  const addDefaultCode = useCallback(() => {
-    const newCode: DefaultCodeProps = {
-      CodeLanguage: "python",
-      CodeText: "",
-      CodeOrder: defaultCodes.length + 1,
-    };
-
-    const updatedCodes = [...defaultCodes, newCode];
-    setDefaultCodes(updatedCodes);
-
-    const updatedQuestions = [...(test?.Questions || [])];
-    updatedQuestions[questionIndex] = {
-      ...updatedQuestions[questionIndex],
-      DefaultCodes: updatedCodes,
-    };
-
-    setTest({ ...test, Questions: updatedQuestions });
-  }, [defaultCodes, test, questionIndex, setTest]);
-
-  const updateDefaultCode = useCallback(
-    (index: number, field: keyof DefaultCodeProps, value: string) => {
-      const updatedCodes = [...defaultCodes];
-      updatedCodes[index] = {
-        ...updatedCodes[index],
-        [field]: value,
-      };
-
-      setDefaultCodes(updatedCodes);
-
-      const updatedQuestions = [...(test?.Questions || [])];
-      updatedQuestions[questionIndex] = {
-        ...updatedQuestions[questionIndex],
-        DefaultCodes: updatedCodes,
-      };
-
-      setTest({ ...test, Questions: updatedQuestions });
-    },
-    [defaultCodes, test, questionIndex, setTest]
-  );
-
-  const deleteDefaultCode = useCallback(
-    (index: number) => {
-      const updatedCodes = defaultCodes
-        .filter((_, i) => i !== index)
-        .map((code, i) => ({
-          ...code,
-          CodeOrder: i + 1,
-        }));
-
-      setDefaultCodes(updatedCodes);
-
-      const updatedQuestions = [...(test?.Questions || [])];
-      updatedQuestions[questionIndex] = {
-        ...updatedQuestions[questionIndex],
-        DefaultCodes: updatedCodes,
-      };
-
-      setTest({ ...test, Questions: updatedQuestions });
-    },
-    [defaultCodes, test, questionIndex, setTest]
-  );
-
+const DefaultCodeEditor = ({
+  defaultCodes,
+  addDefaultCode,
+  updateDefaultCode,
+  deleteDefaultCode,
+}: DefaultCodeEditorProps) => {
   return (
     <div className="mt-4">
-      <strong>[Default Code]</strong>
+      <strong>Default Code</strong>
       {defaultCodes.map((code, index) => (
         <Card
           key={index}
@@ -109,7 +50,9 @@ const DefaultCodeEditor = ({ test, setTest, questionIndex }: DefaultCodeEditorPr
           <div className="mb-2">
             <Select
               value={code.CodeLanguage || "python"}
-              onChange={(value) => updateDefaultCode(index, "CodeLanguage", value)}
+              onChange={(value) =>
+                updateDefaultCode(index, "CodeLanguage", value)
+              }
               options={languageOptions}
               className="w-32"
             />

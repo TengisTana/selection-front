@@ -2,6 +2,7 @@ export interface TestCaseProps {
   TestCaseId?: string;
   Input?: string;
   ExpectedOutput?: string;
+  TestCaseOrder?: number;
 }
 
 export interface DefaultCodeProps {

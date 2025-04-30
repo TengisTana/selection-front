@@ -17,10 +17,10 @@ export async function POST(req: NextRequest) {
   const { code, language, testCases }: { code: string; language: string; testCases: TestCase[] } = await req.json();
 
   const languageMap: Record<string, number> = {
-    javascript: 63, // Node.js
-    python: 71,    // Python 3
-    java: 62,      // Java
-    c_cpp: 54,     // C++
+    javascript: 63,
+    python: 71, 
+    java: 62,     
+    c_cpp: 54,    
   };
 
   const languageId = languageMap[language];
@@ -31,9 +31,7 @@ export async function POST(req: NextRequest) {
   try {
     const results: TestResult[] = [];
 
-    // Run each test case
     for (const testCase of testCases) {
-      // Submit code to Judge0
       const response = await axios.post(
         "https://judge0-ce.p.rapidapi.com/submissions",
         {
@@ -51,8 +49,7 @@ export async function POST(req: NextRequest) {
       );
 
       const token: string = response.data.token;
-
-      // Poll for the result
+      
       let result;
       for (let i = 0; i < 10; i++) {
         await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait 1s
