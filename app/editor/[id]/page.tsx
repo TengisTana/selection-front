@@ -2,13 +2,14 @@
 import { useState, useCallback, useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Form, Input, InputNumber, message } from "antd";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import QuestionCard from "@/components/QuestionCard";
 import { CreateTest, GetTestById, UpdateTestById } from "@/app/api/action";
 import { TestProps, QuestionProps } from "@/utils/utils";
 
 const EditorPage = () => {
   const [form] = Form.useForm();
+  const router = useRouter();
   const params = useParams();
   const id = params.id as string;
   const isNew = id === "new";
@@ -56,11 +57,10 @@ const EditorPage = () => {
   // Mutation for creating a test
   const createTestMutation = useMutation({
     mutationFn: (testData: TestProps) => CreateTest(testData),
-    onSuccess: () => {
+    onSuccess: (data) => {
       message.success("Test created successfully!");
       queryClient.invalidateQueries({ queryKey: ["tests"] });
-      form.resetFields();
-      setTest({ title: "", duration: undefined, questions: [] });
+      router.push(`/editor/${data.testId}`);
     },
     onError: (error: any) => {
       message.error(

@@ -27,24 +27,24 @@ instance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// instance.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     if (error.response && error.response.status === 401) {
-//       localStorage.removeItem("token");
-//       message.error("Дахин нэвтрэнэ үү", 5, () => {
-//         if (typeof window !== "undefined") {
-//           window.location.href = "/signin";
-//         }
-//       });
+instance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+      message.error("Дахин нэвтрэнэ үү", 5, () => {
+        if (typeof window !== "undefined") {
+          window.location.href = "/signin";
+        }
+      });
 
-//       if (typeof window !== "undefined") {
-//         window.location.href = "/signin";
-//       }
-//     }
-//     return Promise.reject(error);
-//   }
-// );
+      if (typeof window !== "undefined") {
+        window.location.href = "/signin";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
 
 export const signin = async (body: any) => {
   try {
