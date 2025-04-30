@@ -10,79 +10,79 @@ import { DefaultCodeProps } from "@/utils/utils";
 const { Option } = Select;
 
 const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
-  const question = test?.Questions?.[id];
-  const { Title, Descr, QuestionText, Options, TestCases, DefaultCodes, QuestionType } =
+  const question = test?.questions?.[id];
+  const { title, descr, questionText, options, testCases, defaultCodes, questionType } =
     question || {};
 
   const updateQuestionType = (value: string) => {
-    const updatedQuestions = [...(test?.Questions || [])];
+    const updatedQuestions = [...(test?.questions || [])];
     updatedQuestions[id] = {
       ...updatedQuestions[id],
-      QuestionType: value,
+      questionType: value,
       // Reset options' IsCorrect for SINGLE_CHOICE to ensure only one is correct
-      Options: value === "SINGLE_CHOICE"
-        ? updatedQuestions[id].Options?.map((opt, index) => ({
+      options: value === "SINGLE_CHOICE"
+        ? updatedQuestions[id].options?.map((opt, index) => ({
             ...opt,
-            IsCorrect: index === 0 ? opt.IsCorrect : false,
+            isCorrect: index === 0 ? opt.isCorrect : false,
           }))
-        : updatedQuestions[id].Options,
+        : updatedQuestions[id].options,
     };
-    setTest({ ...test, Questions: updatedQuestions });
+    setTest({ ...test, questions: updatedQuestions });
   };
 
   const addOption = useCallback(() => {
-    const updatedQuestions = [...(test?.Questions || [])];
-    const currentOptions = updatedQuestions[id].Options || [];
+    const updatedQuestions = [...(test?.questions || [])];
+    const currentOptions = updatedQuestions[id].options || [];
 
-    updatedQuestions[id].Options = [
+    updatedQuestions[id].options = [
       ...currentOptions,
       {
-        OptionText: "",
-        IsCorrect: false,
-        OptionOrder: currentOptions.length + 1,
+        optionText: "",
+        isCorrect: false,
+        optionOrder: currentOptions.length + 1,
       },
     ];
 
-    setTest({ ...test, Questions: updatedQuestions });
+    setTest({ ...test, questions: updatedQuestions });
   }, [test, id, setTest]);
 
   const addTestCase = useCallback(() => {
-    const updatedQuestions = [...(test?.Questions || [])];
-    const currentTestCases = updatedQuestions[id].TestCases || [];
+    const updatedQuestions = [...(test?.questions || [])];
+    const currentTestCases = updatedQuestions[id].testCases || [];
 
-    updatedQuestions[id].TestCases = [
+    updatedQuestions[id].testCases = [
       ...currentTestCases,
       {
-        Input: "",
-        ExpectedOutput: "",
-        TestCaseOrder: currentTestCases.length + 1,
+        input: "",
+        expectedOutput: "",
+        testCaseOrder: currentTestCases.length + 1,
       },
     ];
 
-    setTest({ ...test, Questions: updatedQuestions });
+    setTest({ ...test, questions: updatedQuestions });
   }, [test, id, setTest]);
 
   const addDefaultCode = useCallback(() => {
-    const updatedQuestions = [...(test?.Questions || [])];
-    const currentDefaultCodes = updatedQuestions[id].DefaultCodes || [];
+    const updatedQuestions = [...(test?.questions || [])];
+    const currentDefaultCodes = updatedQuestions[id].defaultCodes || [];
 
-    updatedQuestions[id].DefaultCodes = [
+    updatedQuestions[id].defaultCodes = [
       ...currentDefaultCodes,
       {
-        CodeLanguage: "python",
-        CodeText: "",
-        CodeOrder: currentDefaultCodes.length + 1,
+        codeLanguage: "python",
+        codeText: "",
+        defaultCodeOrder: currentDefaultCodes.length + 1,
       },
     ];
 
-    setTest({ ...test, Questions: updatedQuestions });
+    setTest({ ...test, questions: updatedQuestions });
   }, [test, id, setTest]);
 
   const updateDefaultCode = useCallback(
     (codeIndex: number, field: keyof DefaultCodeProps, value: string) => {
-      const updatedQuestions = [...(test?.Questions || [])];
+      const updatedQuestions = [...(test?.questions || [])];
       const updatedDefaultCodes = [
-        ...(updatedQuestions[id].DefaultCodes || []),
+        ...(updatedQuestions[id].defaultCodes || []),
       ];
 
       updatedDefaultCodes[codeIndex] = {
@@ -90,40 +90,40 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
         [field]: value,
       };
 
-      updatedQuestions[id].DefaultCodes = updatedDefaultCodes;
-      setTest({ ...test, Questions: updatedQuestions });
+      updatedQuestions[id].defaultCodes = updatedDefaultCodes;
+      setTest({ ...test, questions: updatedQuestions });
     },
     [test, id, setTest]
   );
 
   const deleteDefaultCode = useCallback(
     (codeIndex: number) => {
-      const updatedQuestions = [...(test?.Questions || [])];
+      const updatedQuestions = [...(test?.questions || [])];
       const updatedDefaultCodes =
-        updatedQuestions[id].DefaultCodes?.filter(
+        updatedQuestions[id].defaultCodes?.filter(
           (_, index) => index !== codeIndex
         ) || [];
 
-      updatedQuestions[id].DefaultCodes = updatedDefaultCodes.map(
+      updatedQuestions[id].defaultCodes = updatedDefaultCodes.map(
         (code, index) => ({
           ...code,
-          CodeOrder: index + 1,
+          defaultCodeOrder: index + 1,
         })
       );
 
-      setTest({ ...test, Questions: updatedQuestions });
+      setTest({ ...test, questions: updatedQuestions });
     },
     [test, id, setTest]
   );
 
   const deleteQuestion = useCallback(() => {
     const updatedQuestions =
-      test?.Questions?.filter((_, index) => index !== id) || [];
+      test?.questions?.filter((_, index) => index !== id) || [];
     const reorderedQuestions = updatedQuestions.map((q, index) => ({
       ...q,
-      QuestionOrder: index + 1,
+      questionOrder: index + 1,
     }));
-    setTest({ ...test, Questions: reorderedQuestions });
+    setTest({ ...test, questions: reorderedQuestions });
   }, [test, id, setTest]);
 
   return (
@@ -137,7 +137,7 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
     >
       <Form.Item label="Question Type">
         <Select
-          value={QuestionType || "SINGLE_CHOICE"}
+          value={questionType || "SINGLE_CHOICE"}
           onChange={updateQuestionType}
           placeholder="Select question type"
         >
@@ -148,12 +148,12 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
       </Form.Item>
       <Form.Item label="Question Title">
         <Input
-          value={Title || ""}
+          value={title || ""}
           onChange={(e) => {
             setTest({
               ...test,
-              Questions: test?.Questions?.map((q, index) =>
-                index === id ? { ...q, Title: e.target.value } : q
+              questions: test?.questions?.map((q, index) =>
+                index === id ? { ...q, title: e.target.value } : q
               ),
             });
           }}
@@ -162,12 +162,12 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
       </Form.Item>
       <Form.Item label="Question Description">
         <Input
-          value={Descr || ""}
+          value={descr || ""}
           onChange={(e) => {
             setTest({
               ...test,
-              Questions: test?.Questions?.map((q, index) =>
-                index === id ? { ...q, Descr: e.target.value } : q
+              questions: test?.questions?.map((q, index) =>
+                index === id ? { ...q, descr: e.target.value } : q
               ),
             });
           }}
@@ -176,22 +176,22 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
       </Form.Item>
       <Form.Item label="Question Text">
         <Input.TextArea
-          value={QuestionText || ""}
+          value={questionText || ""}
           onChange={(e) => {
             setTest({
               ...test,
-              Questions: test?.Questions?.map((q, index) =>
-                index === id ? { ...q, QuestionText: e.target.value } : q
+              questions: test?.questions?.map((q, index) =>
+                index === id ? { ...q, questionText: e.target.value } : q
               ),
             });
           }}
           placeholder="Question Text"
         />
       </Form.Item>
-      {QuestionType !== "CODE" && (
+      {questionType !== "CODE" && (
         <div className="mb-2">
           <strong>Options:</strong>
-          {Options?.map((option, index) => (
+          {options?.map((option, index) => (
             <OptionCard
               key={index}
               option={option}
@@ -199,16 +199,16 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
               optionIndex={index}
               setTest={setTest}
               test={test}
-              questionType={QuestionType || "SINGLE_CHOICE"}
+              questionType={questionType || "SINGLE_CHOICE"}
             />
           ))}
           <Button onClick={addOption}>Add Option</Button>
         </div>
       )}
-      {QuestionType === "CODE" && (
+      {questionType === "CODE" && (
         <>
           <DefaultCodeEditor
-            defaultCodes={DefaultCodes || []}
+            defaultCodes={defaultCodes || []}
             questionIndex={id}
             addDefaultCode={addDefaultCode}
             updateDefaultCode={updateDefaultCode}
@@ -216,7 +216,7 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
           />
           <div className="mb-2">
             <strong>Test Cases:</strong>
-            {TestCases?.map((testCase, index) => (
+            {testCases?.map((testCase, index) => (
               <TestCaseCard
                 key={index}
                 testCase={testCase}

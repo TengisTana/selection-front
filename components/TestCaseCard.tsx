@@ -18,9 +18,9 @@ const TestCaseCard = ({
   setTest,
 }: TestCaseCardProps) => {
   const updateTestCase = (key: keyof TestCaseProps, value: any) => {
-    const updatedQuestions = [...(test?.Questions || [])];
+    const updatedQuestions = [...(test?.questions || [])];
     const updatedTestCases = [
-      ...(updatedQuestions[questionIndex]?.TestCases || []),
+      ...(updatedQuestions[questionIndex]?.testCases || []),
     ];
 
     updatedTestCases[testCaseIndex] = {
@@ -28,24 +28,24 @@ const TestCaseCard = ({
       [key]: value,
     };
 
-    updatedQuestions[questionIndex].TestCases = updatedTestCases;
-    setTest({ ...test, Questions: updatedQuestions });
+    updatedQuestions[questionIndex].testCases = updatedTestCases;
+    setTest({ ...test, questions: updatedQuestions });
   };
 
   const deleteTestCase = () => {
-    const updatedQuestions = [...(test?.Questions || [])];
+    const updatedQuestions = [...(test?.questions || [])];
     const updatedTestCases =
-      updatedQuestions[questionIndex].TestCases?.filter(
+      updatedQuestions[questionIndex].testCases?.filter(
         (_, index) => index !== testCaseIndex
       ) || [];
-    updatedQuestions[questionIndex].TestCases = updatedTestCases.map(
+    updatedQuestions[questionIndex].testCases = updatedTestCases.map(
       (tc, index) => ({
         ...tc,
-        TestCaseOrder: index + 1,
+        testCaseOrder: index + 1,
       })
     );
 
-    setTest({ ...test, Questions: updatedQuestions });
+    setTest({ ...test, questions: updatedQuestions });
   };
 
   return (
@@ -53,13 +53,13 @@ const TestCaseCard = ({
       <Space direction="vertical" style={{ width: "100%" }}>
         <Input
           placeholder="Input"
-          value={testCase.Input || ""}
-          onChange={(e) => updateTestCase("Input", e.target.value)}
+          value={testCase.input || ""}
+          onChange={(e) => updateTestCase("input", e.target.value)}
         />
         <Input
           placeholder="Expected Output"
-          value={testCase.ExpectedOutput || ""}
-          onChange={(e) => updateTestCase("ExpectedOutput", e.target.value)}
+          value={testCase.expectedOutput || ""}
+          onChange={(e) => updateTestCase("expectedOutput", e.target.value)}
         />
         <Button danger onClick={deleteTestCase}>
           Delete

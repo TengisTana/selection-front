@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button, Form, Input, message } from "antd";
-import { signup } from "@/app/api/action";
+import { signin } from "@/app/api/action";
 import { useRouter } from "next/navigation";
 
-const SignupPage = () => {
+const SigninPage = () => {
   const [form] = Form.useForm();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -14,11 +14,9 @@ const SignupPage = () => {
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      const response = await signup({
+      const response = await signin({
         username: values.username,
-        email: values.email,
         password: values.password,
-        role: values.role,
       });
       message.success("signup successful!", 5);
       router.push("/editor/new");
@@ -55,17 +53,6 @@ const SignupPage = () => {
           </Form.Item>
 
           <Form.Item
-            name="email"
-            label="Email"
-            rules={[
-              { required: true, message: "Please enter your email" },
-              { type: "email", message: "Please enter a valid email" },
-            ]}
-          >
-            <Input placeholder="Enter your email" />
-          </Form.Item>
-
-          <Form.Item
             name="password"
             label="Password"
             rules={[
@@ -81,10 +68,6 @@ const SignupPage = () => {
             <Input.Password placeholder="Enter your password" />
           </Form.Item>
 
-          <Form.Item name="role" hidden>
-            <Input type="hidden" value="USER" />
-          </Form.Item>
-
           <Form.Item>
             <Button
               type="primary"
@@ -93,14 +76,14 @@ const SignupPage = () => {
               loading={loading}
               className="bg-blue-500 hover:bg-blue-600"
             >
-              Sign Up
+              Sign In
             </Button>
           </Form.Item>
         </Form>
         <p className="text-center mt-4">
-          Already have an account?{" "}
-          <Link href="/signin" className="text-blue-500 hover:underline">
-            Sign in
+          Dont have an account?{" "}
+          <Link href="/signup" className="text-blue-500 hover:underline">
+            Sign up
           </Link>
         </p>
       </div>
@@ -108,4 +91,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default SigninPage;

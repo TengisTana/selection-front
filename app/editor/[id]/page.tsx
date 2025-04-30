@@ -1,24 +1,66 @@
 "use client";
-import { useState, useCallback } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useCallback, useEffect } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Form, Input, InputNumber, message } from "antd";
+import { useParams } from "next/navigation";
 import QuestionCard from "@/components/QuestionCard";
-import { CreateTest } from "@/app/api/action";
+import { CreateTest, GetTestById, UpdateTestById } from "@/app/api/action";
 import { TestProps, QuestionProps } from "@/utils/utils";
 
 const EditorPage = () => {
   const [form] = Form.useForm();
-  const [test, setTest] = useState<TestProps | null>(null);
+  const params = useParams();
+  const id = params.id as string;
+  const isNew = id === "new";
   const queryClient = useQueryClient();
+
+  // Initialize test state
+  const [test, setTest] = useState<TestProps | null>(
+    isNew ? { title: "", duration: undefined, questions: [] } : null
+  );
+
+  console.log(test);
+
+  // Fetch test data if editing an existing test
+  const {
+    data: fetchedTest,
+    isLoading,
+    error,
+  } = useQuery<TestProps>({
+    queryKey: ["test", id],
+    queryFn: () => GetTestById(id),
+    enabled: !isNew,
+  });
+
+  // Handle fetched test data
+  useEffect(() => {
+    if (fetchedTest) {
+      setTest(fetchedTest);
+      form.setFieldsValue({
+        Title: fetchedTest.title,
+        Duration: fetchedTest.duration,
+      });
+    }
+  }, [fetchedTest, form]);
+
+  // Handle fetch error
+  useEffect(() => {
+    if (error) {
+      message.error(
+        (error as any).response?.data?.message ||
+          "Failed to fetch test. Please try again."
+      );
+    }
+  }, [error]);
 
   // Mutation for creating a test
   const createTestMutation = useMutation({
     mutationFn: (testData: TestProps) => CreateTest(testData),
-    onSuccess: (data) => {
+    onSuccess: () => {
       message.success("Test created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["tests"] }); // Invalidate test-related queries
-      form.resetFields(); // Reset the form
-      setTest(null); // Clear the local test state
+      queryClient.invalidateQueries({ queryKey: ["tests"] });
+      form.resetFields();
+      setTest({ title: "", duration: undefined, questions: [] });
     },
     onError: (error: any) => {
       message.error(
@@ -28,93 +70,117 @@ const EditorPage = () => {
     },
   });
 
+  // Mutation for updating a test
+  const updateTestMutation = useMutation({
+    mutationFn: (testData: TestProps) => UpdateTestById(id, testData),
+    onSuccess: () => {
+      message.success("Test updated successfully!");
+      queryClient.invalidateQueries({ queryKey: ["test", id] });
+    },
+    onError: (error: any) => {
+      message.error(
+        error.response?.data?.message ||
+          "Failed to update test. Please try again."
+      );
+    },
+  });
+
   // Handle adding a new question
   const addQuestion = useCallback(() => {
     setTest((prevTest) => ({
       ...prevTest,
-      Questions: [
-        ...(prevTest?.Questions || []),
+      questions: [
+        ...(prevTest?.questions || []),
         {
-          Title: "",
-          QuestionOrder: (prevTest?.Questions?.length || 0) + 1,
-          QuestionType: "MULTI_CHOICE", // Default to MULTI_CHOICE as per example
+          title: "",
+          questionOrder: (prevTest?.questions?.length || 0) + 1,
+          questionType: "MULTI_CHOICE",
         },
       ],
     }));
   }, []);
 
-  // Handle form submission to create the test
-  const handleCreateTest = () => {
-    if (!test?.Title) {
+  // Handle form submission (create or update)
+  const handleSubmit = () => {
+    if (!test?.title) {
       message.error("Please provide a test title.");
       return;
     }
 
-    // Prepare the request body based on TestProps and example structure
+    // Prepare the request body
     const testData: TestProps = {
-      Title: test.Title,
-      Duration: test.Duration,
-      Questions: test.Questions?.map((question: QuestionProps) => {
-        // Initialize the question object with required fields
+      title: test.title,
+      duration: test.duration,
+      questions: test.questions?.map((question: QuestionProps) => {
         const questionData: Partial<QuestionProps> = {
-          QuestionOrder: question.QuestionOrder,
-          Title: question.Title,
-          QuestionType: question.QuestionType || "MULTI_CHOICE",
+          questionId: question.questionId,
+          questionOrder: question.questionOrder,
+          title: question.title,
+          descr: question.descr,
+          questionText: question.questionText,
+          questionType: question.questionType || "MULTI_CHOICE",
         };
 
-        // Only include Options if it exists and is not empty
-        if (question.Options && question.Options.length > 0) {
-          questionData.Options = question.Options;
+        if (question.options && question.options.length > 0) {
+          questionData.options = question.options;
         }
 
-        // Only include DefaultCodes if it exists and is not empty
-        if (question.DefaultCodes && question.DefaultCodes.length > 0) {
-          questionData.DefaultCodes = question.DefaultCodes;
+        if (question.defaultCodes && question.defaultCodes.length > 0) {
+          questionData.defaultCodes = question.defaultCodes;
         }
 
-        // Only include TestCases if it exists and is not empty
-        if (question.TestCases && question.TestCases.length > 0) {
-          questionData.TestCases = question.TestCases;
+        if (question.testCases && question.testCases.length > 0) {
+          questionData.testCases = question.testCases;
         }
 
         return questionData;
       }),
     };
 
-    // Trigger the mutation
-    createTestMutation.mutate(testData);
+    // Trigger create or update mutation
+    if (isNew) {
+      createTestMutation.mutate(testData);
+    } else {
+      updateTestMutation.mutate(testData);
+    }
   };
+
+  // Show loading state while fetching data
+  if (!isNew && isLoading) {
+    return <div>Loading test data...</div>;
+  }
 
   return (
     <div className="w-[70%] mx-auto bg-[#444] p-4">
+      <h2>{isNew ? "Create New Test" : "Edit Test"}</h2>
       <Form form={form} layout="vertical">
-        <Form.Item label="Test Title">
+        <Form.Item label="Test Title" name="Title">
           <Input
-            value={test?.Title}
+            value={test?.title}
             onChange={(e) =>
               setTest({
                 ...test,
-                Title: e.target.value,
+                title: e.target.value,
               })
             }
             placeholder="Test title"
           />
         </Form.Item>
-        <Form.Item label="Duration">
+        <Form.Item label="Duration" name="Duration">
           <InputNumber
-            value={test?.Duration}
-            onChange={(e) =>
+            value={test?.duration}
+            onChange={(value) =>
               setTest({
                 ...test,
-                Duration: e ?? undefined,
+                duration: value ?? undefined,
               })
             }
             placeholder="Duration"
           />
         </Form.Item>
         <div className="flex flex-col gap-2">
-          {(test?.Questions?.length ?? 0) > 0 &&
-            (test?.Questions ?? []).map((question, index) => (
+          {(test?.questions?.length ?? 0) > 0 &&
+            (test?.questions ?? []).map((question, index) => (
               <QuestionCard
                 key={index}
                 id={index}
@@ -127,11 +193,15 @@ const EditorPage = () => {
           <Button onClick={addQuestion}>Add Question</Button>
           <Button
             type="primary"
-            onClick={handleCreateTest}
-            loading={createTestMutation.isPending}
-            disabled={createTestMutation.isPending}
+            onClick={handleSubmit}
+            loading={
+              createTestMutation.isPending || updateTestMutation.isPending
+            }
+            disabled={
+              createTestMutation.isPending || updateTestMutation.isPending
+            }
           >
-            Create Test
+            {isNew ? "Create Test" : "Update Test"}
           </Button>
         </div>
       </Form>

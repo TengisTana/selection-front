@@ -1,40 +1,44 @@
-export interface TestCaseProps {
-  TestCaseId?: string;
-  Input?: string;
-  ExpectedOutput?: string;
-  TestCaseOrder?: number;
-}
-
-export interface DefaultCodeProps {
-  DefaultCodeId?: string;
-  CodeLanguage?: string;
-  CodeText?: string;
-  CodeOrder?: number;
-}
-
-export interface OptionProps {
-  OptionId?: string;
-  OptionText?: string;
-  OptionOrder?: number;
-  IsCorrect?: boolean;
+export interface TestProps {
+  testId?: string;
+  title?: string;
+  duration?: number;
+  createdAt?: string;
+  questions?: QuestionProps[];
 }
 
 export interface QuestionProps {
-  QuestionId?: string;
-  QuestionOrder?: number;
-  Title?: string;
-  Descr?: string;
-  QuestionText?: string;
-  QuestionType?: string;
-  Options?: OptionProps[];
-  DefaultCodes?: DefaultCodeProps[];
-  TestCases?: TestCaseProps[];
+  questionId?: string;
+  questionOrder?: number;
+  title?: string;
+  descr?: string;
+  questionText?: string;
+  questionType?: string;
+  options?: OptionProps[];
+  defaultCodes?: DefaultCodeProps[];
+  testCases?: TestCaseProps[];
 }
 
-export interface TestProps {
-  TestId?: string;
-  Title?: string;
-  Duration?: number;
-  CreatedAt?: string;
-  Questions?: QuestionProps[];
+export interface TestCaseProps {
+  testCaseId?: string;
+  input?: string;
+  expectedOutput?: string;
+  testCaseOrder?: number;
 }
+
+export interface DefaultCodeProps {
+  defaultCodeId?: string;
+  codeLanguage?: string;
+  codeText?: string;
+  defaultCodeOrder?: number;
+}
+
+export interface OptionProps {
+  optionId?: string;
+  optionText?: string;
+  optionOrder?: number;
+  isCorrect?: boolean;
+}
+
+
+
+

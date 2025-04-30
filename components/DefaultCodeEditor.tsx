@@ -49,19 +49,19 @@ const DefaultCodeEditor = ({
         >
           <div className="mb-2">
             <Select
-              value={code.CodeLanguage || "python"}
+              value={code.codeLanguage || "python"}
               onChange={(value) =>
-                updateDefaultCode(index, "CodeLanguage", value)
+                updateDefaultCode(index, "codeLanguage", value)
               }
               options={languageOptions}
               className="w-32"
             />
           </div>
           <AceEditor
-            mode={code.CodeLanguage || "python"}
+            mode={code.codeLanguage || "python"}
             theme="monokai"
-            value={code.CodeText || ""}
-            onChange={(value) => updateDefaultCode(index, "CodeText", value)}
+            value={code.codeText || ""}
+            onChange={(value) => updateDefaultCode(index, "codeText", value)}
             name={`code-editor-${index}`}
             editorProps={{ $blockScrolling: true }}
             setOptions={{

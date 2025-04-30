@@ -12,15 +12,15 @@ const OptionCard = ({
   questionType,
 }: OptionCardProps & { questionType: string }) => {
   const updateOption = (key: keyof OptionProps, value: any) => {
-    const updatedQuestions = [...(test?.Questions || [])];
+    const updatedQuestions = [...(test?.questions || [])];
     const updatedOptions = [
-      ...(updatedQuestions[questionIndex]?.Options || []),
+      ...(updatedQuestions[questionIndex]?.options || []),
     ];
 
-    if (key === "IsCorrect" && questionType === "SINGLE_CHOICE" && value) {
+    if (key === "isCorrect" && questionType === "SINGLE_CHOICE" && value) {
       // For SINGLE_CHOICE, only one option can be correct
       updatedOptions.forEach((opt, idx) => {
-        opt.IsCorrect = idx === optionIndex ? value : false;
+        opt.isCorrect = idx === optionIndex ? value : false;
       });
     } else {
       updatedOptions[optionIndex] = {
@@ -29,37 +29,37 @@ const OptionCard = ({
       };
     }
 
-    updatedQuestions[questionIndex].Options = updatedOptions;
-    setTest({ ...test, Questions: updatedQuestions });
+    updatedQuestions[questionIndex].options = updatedOptions;
+    setTest({ ...test, questions: updatedQuestions });
   };
 
   const deleteOption = () => {
-    const updatedQuestions = [...(test?.Questions || [])];
+    const updatedQuestions = [...(test?.questions || [])];
     const updatedOptions =
-      updatedQuestions[questionIndex].Options?.filter(
+      updatedQuestions[questionIndex].options?.filter(
         (_, index) => index !== optionIndex
       ) || [];
-    updatedQuestions[questionIndex].Options = updatedOptions.map(
+    updatedQuestions[questionIndex].options = updatedOptions.map(
       (opt, index) => ({
         ...opt,
-        OptionOrder: index + 1,
+        optionOrder: index + 1,
       })
     );
 
-    setTest({ ...test, Questions: updatedQuestions });
+    setTest({ ...test, questions: updatedQuestions });
   };
 
   return (
     <div className="mb-2 p-2 border rounded flex flex-row gap-4">
       <Input
         placeholder="Option text"
-        value={option.OptionText}
-        onChange={(e) => updateOption("OptionText", e.target.value)}
+        value={option.optionText}
+        onChange={(e) => updateOption("optionText", e.target.value)}
       />
       <Space>
         <Checkbox
-          checked={option.IsCorrect}
-          onChange={(e) => updateOption("IsCorrect", e.target.checked)}
+          checked={option.isCorrect}
+          onChange={(e) => updateOption("isCorrect", e.target.checked)}
         >
           Correct
         </Checkbox>

@@ -27,28 +27,28 @@ instance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-instance.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
-      message.error("Дахин нэвтрэнэ үү", 5, () => {
-        if (typeof window !== "undefined") {
-          window.location.href = "/signin";
-        }
-      });
+// instance.interceptors.response.use(
+//   (response) => response,
+//   (error) => {
+//     if (error.response && error.response.status === 401) {
+//       localStorage.removeItem("token");
+//       message.error("Дахин нэвтрэнэ үү", 5, () => {
+//         if (typeof window !== "undefined") {
+//           window.location.href = "/signin";
+//         }
+//       });
 
-      if (typeof window !== "undefined") {
-        window.location.href = "/signin";
-      }
-    }
-    return Promise.reject(error);
-  }
-);
+//       if (typeof window !== "undefined") {
+//         window.location.href = "/signin";
+//       }
+//     }
+//     return Promise.reject(error);
+//   }
+// );
 
 export const signin = async (body: any) => {
   try {
-    const response = await instance.post("/signin", body);
+    const response = await instance.post("/auth/signin", body);
     localStorage.setItem("token", response.data);
     return response.data;
   } catch (error: any) {
@@ -83,3 +83,13 @@ export const GetTestById = async (id: string) => {
     throw error;
   }
 };
+
+export const UpdateTestById = async (id: string, data: any) => {
+  try {
+    const response = await instance.put(`/api/test/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
