@@ -20,8 +20,6 @@ const EditorPage = () => {
     isNew ? { title: "", duration: undefined, questions: [] } : null
   );
 
-  console.log(test);
-
   // Fetch test data if editing an existing test
   const {
     data: fetchedTest,

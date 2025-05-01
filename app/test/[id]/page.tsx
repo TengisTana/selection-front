@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { Button, Divider } from "antd";
 import AnswerCard from "@/components/AnswerCard";
+import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
+import { GetTestForTest } from "@/app/api/action";
 
 const testData = {
   title: "Хөгжүүлэгчийн шалгалтын тест",
@@ -140,10 +143,25 @@ const exampleAnswerCards = [
 ];
 
 export default function TestPage() {
+  const params = useParams();
+  const id = params.id as string;
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [timeLeft, setTimeLeft] = useState(testData.time * 60);
   const [answers, setAnswers] = useState<{ [key: number]: any }>({});
   const [step, setStep] = useState<"START" | "TEST" | "END">("START");
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["test", id],
+    queryFn: () => GetTestForTest(id),
+    enabled: true,
+    refetchOnWindowFocus: false,
+  });
+
+  // useEffect(() => {
+  //   if (data) {
+
+  //   } 
+  // })
 
   useEffect(() => {
     let timer: NodeJS.Timeout;

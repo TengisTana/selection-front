@@ -75,9 +75,27 @@ export const CreateTest = async (data: any) => {
   }
 };
 
+export const GetAllTests = async () => {
+  try {
+    const response = await instance.get(`/api/test/all`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const GetTestById = async (id: string) => {
   try {
     const response = await instance.get(`/api/test/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const GetTestForTest = async (id: string) => {
+  try {
+    const response = await instance.get(`/api/test/use/${id}`);
     return response.data;
   } catch (error) {
     throw error;
@@ -93,3 +111,11 @@ export const UpdateTestById = async (id: string, data: any) => {
   }
 };
 
+export const DeleteTestById = async (id: string) => {
+  try {
+    const response = await instance.delete(`/api/test/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

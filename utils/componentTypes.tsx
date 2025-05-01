@@ -5,6 +5,22 @@ export interface TestCase {
   expectedOutput: string;
 }
 
+export interface TestBasicProps {
+  testId: string;
+  createdAt: string;
+  title: string;
+  duration: number;
+}
+
+export interface TestCardProps {
+  testId: string;
+  createdAt: string;
+  title: string;
+  duration: number;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
+}
+
 export interface TestResult {
   input: string;
   expectedOutput: string;
