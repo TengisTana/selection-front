@@ -6,15 +6,15 @@ import { AnswerCardProps } from "@/utils/componentTypes";
 const { TextArea } = Input;
 
 const AnswerCard = ({
-  number,
+  questionId,
+  questionOrder,
   title,
-  question,
-  content,
-  options,
-  optionNumber,
+  descr,
+  questionText,
   questionType,
+  options,
   testCases,
-  defaultCode,
+  defaultCodes,
   onAnswerChange,
 }: AnswerCardProps & { onAnswerChange?: (answer: any) => void }) => {
   const [textValue, setTextValue] = useState<string>("");
@@ -22,8 +22,8 @@ const AnswerCard = ({
   const [radioValue, setRadioValue] = useState<number | undefined>(undefined);
 
   const radioOptions = options
-    ? options.map((option: any, index: number) => ({
-        label: option,
+    ? options.map((option, index) => ({
+        label: option.optionText || "",
         value: index,
       }))
     : [];
@@ -36,26 +36,26 @@ const AnswerCard = ({
 
   return (
     <Card
-      title={number}
+      title={questionOrder ? `Question ${questionOrder}` : ""}
       className="!border-none !text-white hover:scale-101 duration-1000 ease-in-out"
     >
       <div className="flex flex-col gap-4">
         <p className="flex flex-row gap-2 text-xl font-bold">
-          <span>{number}.</span>
+          <span>{questionOrder}.</span>
           <span>{title}</span>
         </p>
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-2">
-            <p>{question}</p>
-            {content && (
+            <p>{descr}</p>
+            {questionText && (
               <pre className="bg-[#262626] p-4 rounded-md text-sm font-mono whitespace-pre-wrap text-white">
-                {content}
+                {questionText}
               </pre>
             )}
-            {questionType === "WRITE_CODE" && testCases && (
+            {questionType === "CODE" && testCases && (
               <Compiler
                 testCases={testCases}
-                defaultCode={defaultCode}
+                defaultCodes={defaultCodes}
                 onCodeChange={handleCodeChange}
               />
             )}
@@ -74,11 +74,15 @@ const AnswerCard = ({
             {questionType === "MULTI_CHOICE" && options && (
               <div className="flex flex-col gap-2">
                 <p>
-                  Pick <span className="font-bold">{optionNumber}</span> option
+                  Pick <span className="font-bold">{options.length}</span>{" "}
+                  option
                 </p>
                 <Checkbox.Group
                   className="flex flex-col gap-2"
-                  options={options}
+                  options={options.map((option, index) => ({
+                    label: option.optionText || "",
+                    value: index,
+                  }))}
                   value={checkedValues}
                   onChange={(values) => {
                     setCheckedValues(values as number[]);
@@ -100,7 +104,7 @@ const AnswerCard = ({
                   }}
                   className="!flex !flex-col gap-2"
                 >
-                  {radioOptions.map((option: any) => (
+                  {radioOptions.map((option) => (
                     <Radio key={option.value} value={option.value}>
                       {option.label}
                     </Radio>

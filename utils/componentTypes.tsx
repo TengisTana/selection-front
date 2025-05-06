@@ -1,9 +1,9 @@
-import { OptionProps, TestProps } from "./utils";
-
-export interface TestCase {
-  input: string;
-  expectedOutput: string;
-}
+import {
+  DefaultCodeProps,
+  OptionProps,
+  TestCaseProps,
+  TestProps,
+} from "./utils";
 
 export interface TestBasicProps {
   testId: string;
@@ -29,31 +29,20 @@ export interface TestResult {
 }
 
 export interface CompilerProps {
-  testCases: TestCase[];
-  defaultCode?: {
-    javascript?: string;
-    python?: string;
-    java?: string;
-    c_cpp?: string;
-  };
+  testCases: TestCaseProps[];
+  defaultCodes?: DefaultCodeProps[];
 }
 
 export interface AnswerCardProps {
-  number: number;
-  title: string;
-  description?: string;
-  question?: string;
-  content?: any;
-  options?: any;
-  optionNumber?: string;
-  questionType?: any;
-  testCases?: TestCase[];
-  defaultCode?: {
-    javascript?: string;
-    python?: string;
-    java?: string;
-    c_cpp?: string;
-  };
+  questionId?: string;
+  questionOrder?: number;
+  title?: string;
+  descr?: string;
+  questionText?: string;
+  questionType?: string;
+  options?: OptionProps[];
+  testCases?: TestCaseProps[];
+  defaultCodes?: DefaultCodeProps[];
 }
 
 export interface QuestionCardProps {

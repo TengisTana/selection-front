@@ -15,7 +15,7 @@ type Language = "javascript" | "python" | "java" | "c_cpp";
 
 const Compiler = ({
   testCases,
-  defaultCode,
+  defaultCodes,
   onCodeChange,
 }: CompilerProps & {
   onCodeChange?: (code: string, testResults: TestResult[]) => void;
@@ -27,12 +27,15 @@ const Compiler = ({
   const languages: Language[] = ["javascript", "python", "java", "c_cpp"];
 
   useEffect(() => {
-    if (defaultCode && defaultCode[language]) {
-      setCode(defaultCode[language] || "");
+    if (defaultCodes) {
+      const selectedCode = defaultCodes.find(
+        (code) => code.codeLanguage === language
+      );
+      setCode(selectedCode?.codeText || "");
     } else {
       setCode("");
     }
-  }, [language, defaultCode]);
+  }, [language, defaultCodes]);
 
   const handleRun = async () => {
     const response = await fetch("/api/run", {

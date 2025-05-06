@@ -58,7 +58,7 @@ const EditorPage = () => {
     onSuccess: (data) => {
       message.success("Test created successfully!");
       queryClient.invalidateQueries({ queryKey: ["tests"] });
-      router.push(`/editor/${data.testId}`);
+      router.push(`/editor/${data.testid}`);
     },
     onError: (error: any) => {
       message.error(
