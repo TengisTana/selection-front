@@ -1,12 +1,12 @@
 "use client";
 import AceEditor from "react-ace";
 import { Card, Select, Button } from "antd";
-import { DefaultCodeProps } from "@/utils/utils";
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/mode-java";
 import "ace-builds/src-noconflict/mode-c_cpp";
 import "ace-builds/src-noconflict/theme-monokai";
+import { DefaultCodeProps } from "@/utils/utils";
 
 interface DefaultCodeEditorProps {
   defaultCodes: DefaultCodeProps[];

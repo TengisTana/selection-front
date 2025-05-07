@@ -11,21 +11,28 @@ const { Option } = Select;
 
 const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
   const question = test?.questions?.[id];
-  const { title, descr, questionText, options, testCases, defaultCodes, questionType } =
-    question || {};
+  const {
+    title,
+    descr,
+    questionText,
+    options,
+    testCases,
+    defaultCodes,
+    questionType,
+  } = question || {};
 
   const updateQuestionType = (value: string) => {
     const updatedQuestions = [...(test?.questions || [])];
     updatedQuestions[id] = {
       ...updatedQuestions[id],
       questionType: value,
-      // Reset options' IsCorrect for SINGLE_CHOICE to ensure only one is correct
-      options: value === "SINGLE_CHOICE"
-        ? updatedQuestions[id].options?.map((opt, index) => ({
-            ...opt,
-            isCorrect: index === 0 ? opt.isCorrect : false,
-          }))
-        : updatedQuestions[id].options,
+      options:
+        value === "SINGLE_CHOICE"
+          ? updatedQuestions[id].options?.map((opt, index) => ({
+              ...opt,
+              isCorrect: index === 0 ? opt.isCorrect : false,
+            }))
+          : updatedQuestions[id].options,
     };
     setTest({ ...test, questions: updatedQuestions });
   };
@@ -144,6 +151,7 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
           <Option value="SINGLE_CHOICE">Single Choice</Option>
           <Option value="MULTI_CHOICE">Multiple Choice</Option>
           <Option value="CODE">Code</Option>
+          <Option value="TEXT">Text</Option>
         </Select>
       </Form.Item>
       <Form.Item label="Question Title">
@@ -188,7 +196,9 @@ const QuestionCard = ({ id, test, setTest }: QuestionCardProps) => {
           placeholder="Question Text"
         />
       </Form.Item>
-      {questionType !== "CODE" && (
+      {questionType === "TEXT" && <div>aa</div>}
+      {(questionType === "MULTI_CHOICE" ||
+        questionType === "SINGLE_CHOICE") && (
         <div className="mb-2">
           <strong>Options:</strong>
           {options?.map((option, index) => (

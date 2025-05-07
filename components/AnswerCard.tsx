@@ -25,6 +25,7 @@ const AnswerCard = ({
     ? options.map((option, index) => ({
         label: option.optionText || "",
         value: index,
+        optionId: option.optionId,
       }))
     : [];
 
@@ -65,7 +66,9 @@ const AnswerCard = ({
                 value={textValue}
                 onChange={(e) => {
                   setTextValue(e.target.value);
-                  if (onAnswerChange) onAnswerChange(e.target.value);
+                  if (onAnswerChange) {
+                    onAnswerChange({ textAnswer: e.target.value });
+                  }
                 }}
               />
             )}
@@ -86,7 +89,12 @@ const AnswerCard = ({
                   value={checkedValues}
                   onChange={(values) => {
                     setCheckedValues(values as number[]);
-                    if (onAnswerChange) onAnswerChange(values);
+                    if (onAnswerChange) {
+                      const selectedOptionIds = values.map((index: number) => ({
+                        optionId: options[index].optionId,
+                      }));
+                      onAnswerChange({ optionIds: selectedOptionIds });
+                    }
                   }}
                 />
               </div>
@@ -100,7 +108,12 @@ const AnswerCard = ({
                   value={radioValue}
                   onChange={(e) => {
                     setRadioValue(e.target.value);
-                    if (onAnswerChange) onAnswerChange(e.target.value);
+                    if (onAnswerChange) {
+                      const selectedOptionId = [
+                        { optionId: options[e.target.value].optionId },
+                      ];
+                      onAnswerChange({ optionIds: selectedOptionId });
+                    }
                   }}
                   className="!flex !flex-col gap-2"
                 >

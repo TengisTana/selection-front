@@ -18,7 +18,6 @@ const OptionCard = ({
     ];
 
     if (key === "isCorrect" && questionType === "SINGLE_CHOICE" && value) {
-      // For SINGLE_CHOICE, only one option can be correct
       updatedOptions.forEach((opt, idx) => {
         opt.isCorrect = idx === optionIndex ? value : false;
       });

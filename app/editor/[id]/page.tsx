@@ -1,8 +1,8 @@
 "use client";
 import { useState, useCallback, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button, Form, Input, InputNumber, message } from "antd";
-import { useParams, useRouter } from "next/navigation";
 import QuestionCard from "@/components/QuestionCard";
 import { CreateTest, GetTestById, UpdateTestById } from "@/app/api/action";
 import { TestProps, QuestionProps } from "@/utils/utils";
@@ -15,12 +15,10 @@ const EditorPage = () => {
   const isNew = id === "new";
   const queryClient = useQueryClient();
 
-  // Initialize test state
   const [test, setTest] = useState<TestProps | null>(
     isNew ? { title: "", duration: undefined, questions: [] } : null
   );
 
-  // Fetch test data if editing an existing test
   const {
     data: fetchedTest,
     isLoading,
@@ -31,7 +29,6 @@ const EditorPage = () => {
     enabled: !isNew,
   });
 
-  // Handle fetched test data
   useEffect(() => {
     if (fetchedTest) {
       setTest(fetchedTest);
@@ -42,7 +39,6 @@ const EditorPage = () => {
     }
   }, [fetchedTest, form]);
 
-  // Handle fetch error
   useEffect(() => {
     if (error) {
       message.error(
@@ -52,7 +48,6 @@ const EditorPage = () => {
     }
   }, [error]);
 
-  // Mutation for creating a test
   const createTestMutation = useMutation({
     mutationFn: (testData: TestProps) => CreateTest(testData),
     onSuccess: (data) => {
@@ -68,7 +63,6 @@ const EditorPage = () => {
     },
   });
 
-  // Mutation for updating a test
   const updateTestMutation = useMutation({
     mutationFn: (testData: TestProps) => UpdateTestById(id, testData),
     onSuccess: () => {
@@ -83,7 +77,6 @@ const EditorPage = () => {
     },
   });
 
-  // Handle adding a new question
   const addQuestion = useCallback(() => {
     setTest((prevTest) => ({
       ...prevTest,
@@ -98,14 +91,12 @@ const EditorPage = () => {
     }));
   }, []);
 
-  // Handle form submission (create or update)
   const handleSubmit = () => {
     if (!test?.title) {
       message.error("Please provide a test title.");
       return;
     }
 
-    // Prepare the request body
     const testData: TestProps = {
       title: test.title,
       duration: test.duration,
@@ -135,7 +126,6 @@ const EditorPage = () => {
       }),
     };
 
-    // Trigger create or update mutation
     if (isNew) {
       createTestMutation.mutate(testData);
     } else {
@@ -143,7 +133,6 @@ const EditorPage = () => {
     }
   };
 
-  // Show loading state while fetching data
   if (!isNew && isLoading) {
     return <div>Loading test data...</div>;
   }

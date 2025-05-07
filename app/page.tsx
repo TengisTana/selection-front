@@ -1,10 +1,10 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { DeleteTestById, GetAllTests } from "./api/action";
-import { message, Skeleton } from "antd";
-import TestCard from "@/components/TestCard";
-import { TestBasicProps } from "@/utils/componentTypes";
 import { useRouter } from "next/navigation";
+import { Button, message, Skeleton } from "antd";
+import TestCard from "@/components/TestCard";
+import { DeleteTestById, GetAllTests } from "./api/action";
+import { TestBasicProps } from "@/utils/componentTypes";
 
 export default function Home() {
   const router = useRouter();
@@ -40,19 +40,42 @@ export default function Home() {
     router.push(`/editor/${id}`);
   };
 
-  if (isLoading) {
-    return <Skeleton />;
-  }
-
-  if (error) {
-    return <div>Error</div>;
-  }
+  const CreateNewTestButton = () => (
+    <Button
+      onClick={() => router.push("/editor/new")}
+      type="primary"
+      style={{ marginBottom: "16px" }}
+    >
+      Create new test
+    </Button>
+  );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {userTests.map((test: TestBasicProps, index: number) => (
-        <TestCard key={index} {...test} onEdit={editTest} onDelete={deleteTest}/>
-      ))}
+    <div>
+      <CreateNewTestButton />
+
+      {isLoading ? (
+        <Skeleton />
+      ) : error ? (
+        <div>
+          <p>Error loading tests. Please try again later.</p>
+        </div>
+      ) : !userTests || userTests.length === 0 ? (
+        <div>
+          <p>No tests found. Start by creating a new test!</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {userTests.map((test: TestBasicProps, index: number) => (
+            <TestCard
+              key={index}
+              {...test}
+              onEdit={editTest}
+              onDelete={deleteTest}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

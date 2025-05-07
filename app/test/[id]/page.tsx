@@ -1,27 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Divider, Skeleton } from "antd";
 import AnswerCard from "@/components/AnswerCard";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
 import { GetTestForTest } from "@/app/api/action";
 import { TestProps } from "@/utils/utils";
-
-const testData = {
-  title: "Хөгжүүлэгчийн шалгалтын тест",
-  time: 30,
-  endTitle: "Engineer test",
-};
 
 export default function TestPage() {
   const params = useParams();
   const id = params.id as string;
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(testData.time * 60);
-  const [answers, setAnswers] = useState<{ [key: number]: any }>({});
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [answers, setAnswers] = useState<{ [key: string]: any }>({});
   const [step, setStep] = useState<"START" | "TEST" | "END">("START");
   const [test, setTest] = useState<TestProps | null>(null);
+
+  console.log(answers);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["test", id],
@@ -33,6 +29,9 @@ export default function TestPage() {
   useEffect(() => {
     if (data) {
       setTest(data);
+      if (data.duration) {
+        setTimeLeft(data.duration * 60);
+      }
     }
   }, [data]);
 
@@ -56,10 +55,10 @@ export default function TestPage() {
 
   const attemptedCount = Object.keys(answers).length;
 
-  const handleAnswerChange = useCallback((number: string, answer: any) => {
+  const handleAnswerChange = useCallback((questionId: string, answer: any) => {
     setAnswers((prev) => ({
       ...prev,
-      [number]: answer,
+      [questionId]: answer,
     }));
   }, []);
 
@@ -69,7 +68,7 @@ export default function TestPage() {
     setIsTimerRunning(true);
   };
 
-  const endTest = () => {
+  const endTest = async () => {
     setStep("END");
     setIsTimerRunning(false);
   };
@@ -107,7 +106,7 @@ export default function TestPage() {
         <div>
           <div className="fixed top-0 left-0 w-full bg-gray-800 text-white p-4 z-10 shadow-md">
             <div className="mx-auto max-w-7xl flex justify-between items-center">
-              <h1 className="text-lg font-bold">{testData.title}</h1>
+              <h1 className="text-lg font-bold">{test?.title}</h1>
               <div className="flex gap-6">
                 <span>
                   Attempted: {attemptedCount} / {test?.questions?.length}
@@ -138,7 +137,6 @@ export default function TestPage() {
 
       {step === "END" && (
         <div className="mx-auto mt-10 flex flex-col items-center justify-center text-center p-10 bg-[#424242] rounded gap-4">
-          <h1 className="fon-bold text-2xl">{testData.endTitle}</h1>
           <p>Your test has been successfully submitted</p>
         </div>
       )}

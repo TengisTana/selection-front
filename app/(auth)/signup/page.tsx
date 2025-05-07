@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button, Form, Input, message } from "antd";
 import { signup } from "@/app/api/action";
-import { useRouter } from "next/navigation";
 
 const SignupPage = () => {
   const [form] = Form.useForm();
