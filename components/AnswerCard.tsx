@@ -35,7 +35,7 @@ const AnswerCard = ({
     answer: {
       codeSubmission: string;
       codeLanguage: string;
-      testResults: { testCaseId: string; ActualOutput: string; Passed: boolean }[];
+      testResults: { testCaseId: string; actualOutput: string; passed: boolean }[];
     }
   ) => {
     if (onAnswerChange) {

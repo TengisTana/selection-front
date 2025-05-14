@@ -119,3 +119,12 @@ export const DeleteTestById = async (id: string) => {
     throw error;
   }
 };
+
+export const AnswerTest = async (id: string, data: any) => {
+  try {
+    const response = await instance.post(`/api/answer/${id}`, data);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

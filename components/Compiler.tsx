@@ -18,11 +18,11 @@ const Compiler = ({
   defaultCodes,
   onCodeChange,
 }: CompilerProps & {
-  onCodeChange?: (answer: { codeSubmission: string; codeLanguage: string; testResults: { testCaseId: string; ActualOutput: string; Passed: boolean }[] }) => void;
+  onCodeChange?: (answer: { codeSubmission: string; codeLanguage: string; testResults: { testCaseId: string; actualOutput: string; passed: boolean }[] }) => void;
 }) => {
   const [code, setCode] = useState<string>("");
   const [language, setLanguage] = useState<Language>("javascript");
-  const [testResults, setTestResults] = useState<{ testCaseId: string; ActualOutput: string; Passed: boolean }[]>([]);
+  const [testResults, setTestResults] = useState<{ testCaseId: string; actualOutput: string; passed: boolean }[]>([]);
 
   const languages: Language[] = ["javascript", "python", "java", "c_cpp"];
 
@@ -50,8 +50,8 @@ const Compiler = ({
     const results: TestResult[] = await response.json();
     const formattedResults = results.map((result, index) => ({
       testCaseId: testCases[index]?.testCaseId || `test-${index + 1}`, // Fallback to index-based ID if testCaseId is not provided
-      ActualOutput: result.actualOutput,
-      Passed: result.passed,
+      actualOutput: result.actualOutput,
+      passed: result.passed,
     }));
     setTestResults(formattedResults);
     if (onCodeChange) {
@@ -112,15 +112,15 @@ const Compiler = ({
               <div
                 key={index}
                 className={`${
-                  result.Passed ? "bg-green-400" : "bg-red-400"
+                  result.passed ? "bg-green-400" : "bg-red-400"
                 } p-4 rounded-xl`}
               >
                 <p>
                   <strong>Test Case {index + 1}</strong>
                 </p>
                 <p>Test Case ID: {result.testCaseId}</p>
-                <p>Actual Output: {result.ActualOutput}</p>
-                <p>Status: {result.Passed ? "Passed" : "Failed"}</p>
+                <p>Actual Output: {result.actualOutput}</p>
+                <p>Status: {result.passed ? "Passed" : "Failed"}</p>
               </div>
             ))}
           </div>

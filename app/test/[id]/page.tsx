@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Button, Divider, Skeleton } from "antd";
 import AnswerCard from "@/components/AnswerCard";
-import { GetTestForTest } from "@/app/api/action";
+import { AnswerTest, GetTestForTest } from "@/app/api/action";
 import { TestProps } from "@/utils/utils";
 
 export default function TestPage() {
@@ -17,9 +17,6 @@ export default function TestPage() {
   const [step, setStep] = useState<"START" | "TEST" | "END">("START");
   const [test, setTest] = useState<TestProps | null>(null);
   const [startTime, setStartTime] = useState<string | null>(null);
-  const [submittedTime, setSubmittedTime] = useState<string | null>(null);
-
-  console.log(answers);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["test", id],
@@ -73,9 +70,36 @@ export default function TestPage() {
 
   const endTest = async () => {
     const currentTime = new Date().toISOString();
-    setSubmittedTime(currentTime);
     setStep("END");
     setIsTimerRunning(false);
+
+    // Transform answers into the desired array format
+    const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => {
+      const baseAnswer = { questionId };
+      if (answer.textAnswer) {
+        return { ...baseAnswer, textAnswer: answer.textAnswer };
+      } else if (answer.codeSubmission) {
+        return {
+          ...baseAnswer,
+          codeSubmission: answer.codeSubmission,
+          codeLanguage: answer.codeLanguage,
+          testResults: answer.testResults || [],
+        };
+      } else if (answer.optionIds) {
+        return { ...baseAnswer, optionIds: answer.optionIds };
+      }
+      return baseAnswer;
+    });
+
+    try {
+      await AnswerTest(id, {
+        startedAt: startTime,
+        submittedAt: currentTime,
+        answers: formattedAnswers,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (isLoading) {
