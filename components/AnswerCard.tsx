@@ -16,7 +16,9 @@ const AnswerCard = ({
   testCases,
   defaultCodes,
   onAnswerChange,
-}: AnswerCardProps & { onAnswerChange?: (answer: any) => void }) => {
+}: AnswerCardProps & {
+  onAnswerChange?: (answer: any) => void;
+}) => {
   const [textValue, setTextValue] = useState<string>("");
   const [checkedValues, setCheckedValues] = useState<number[]>([]);
   const [radioValue, setRadioValue] = useState<number | undefined>(undefined);
@@ -29,9 +31,15 @@ const AnswerCard = ({
       }))
     : [];
 
-  const handleCodeChange = (code: string, testResults: any[]) => {
+  const handleCodeChange = (
+    answer: {
+      codeSubmission: string;
+      codeLanguage: string;
+      testResults: { testCaseId: string; ActualOutput: string; Passed: boolean }[];
+    }
+  ) => {
     if (onAnswerChange) {
-      onAnswerChange({ code, testResults });
+      onAnswerChange(answer);
     }
   };
 

@@ -18,11 +18,11 @@ const Compiler = ({
   defaultCodes,
   onCodeChange,
 }: CompilerProps & {
-  onCodeChange?: (code: string, testResults: TestResult[]) => void;
+  onCodeChange?: (answer: { codeSubmission: string; codeLanguage: string; testResults: { testCaseId: string; ActualOutput: string; Passed: boolean }[] }) => void;
 }) => {
   const [code, setCode] = useState<string>("");
   const [language, setLanguage] = useState<Language>("javascript");
-  const [testResults, setTestResults] = useState<TestResult[]>([]);
+  const [testResults, setTestResults] = useState<{ testCaseId: string; ActualOutput: string; Passed: boolean }[]>([]);
 
   const languages: Language[] = ["javascript", "python", "java", "c_cpp"];
 
@@ -44,12 +44,23 @@ const Compiler = ({
       body: JSON.stringify({
         code,
         language,
-        testCases: testCases,
+        testCases,
       }),
     });
     const results: TestResult[] = await response.json();
-    setTestResults(results);
-    if (onCodeChange) onCodeChange(code, results);
+    const formattedResults = results.map((result, index) => ({
+      testCaseId: testCases[index]?.testCaseId || `test-${index + 1}`, // Fallback to index-based ID if testCaseId is not provided
+      ActualOutput: result.actualOutput,
+      Passed: result.passed,
+    }));
+    setTestResults(formattedResults);
+    if (onCodeChange) {
+      onCodeChange({
+        codeSubmission: code,
+        codeLanguage: language,
+        testResults: formattedResults,
+      });
+    }
   };
 
   return (
@@ -73,7 +84,13 @@ const Compiler = ({
         value={code}
         onChange={(newCode) => {
           setCode(newCode);
-          if (onCodeChange) onCodeChange(newCode, testResults);
+          if (onCodeChange) {
+            onCodeChange({
+              codeSubmission: newCode,
+              codeLanguage: language,
+              testResults,
+            });
+          }
         }}
         width="100%"
         height="400px"
@@ -95,16 +112,15 @@ const Compiler = ({
               <div
                 key={index}
                 className={`${
-                  result.passed ? "bg-green-400" : "bg-red-400"
+                  result.Passed ? "bg-green-400" : "bg-red-400"
                 } p-4 rounded-xl`}
               >
                 <p>
                   <strong>Test Case {index + 1}</strong>
                 </p>
-                <p>Input: {result.input}</p>
-                <p>Expected Output: {result.expectedOutput}</p>
-                <p>Actual Output: {result.actualOutput}</p>
-                <p>Status: {result.passed ? "Passed" : "Failed"}</p>
+                <p>Test Case ID: {result.testCaseId}</p>
+                <p>Actual Output: {result.ActualOutput}</p>
+                <p>Status: {result.Passed ? "Passed" : "Failed"}</p>
               </div>
             ))}
           </div>

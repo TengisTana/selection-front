@@ -21,7 +21,7 @@ const SignupPage = () => {
         role: values.role,
       });
       message.success("signup successful!", 5);
-      router.push("/editor/new");
+      router.push("/");
       form.resetFields();
     } catch (error: any) {
       message.error(

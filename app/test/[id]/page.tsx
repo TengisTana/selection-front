@@ -16,6 +16,8 @@ export default function TestPage() {
   const [answers, setAnswers] = useState<{ [key: string]: any }>({});
   const [step, setStep] = useState<"START" | "TEST" | "END">("START");
   const [test, setTest] = useState<TestProps | null>(null);
+  const [startTime, setStartTime] = useState<string | null>(null);
+  const [submittedTime, setSubmittedTime] = useState<string | null>(null);
 
   console.log(answers);
 
@@ -66,9 +68,12 @@ export default function TestPage() {
     setStep("TEST");
     setTimeLeft((test?.duration ?? 0) * 60);
     setIsTimerRunning(true);
+    setStartTime(new Date().toISOString());
   };
 
   const endTest = async () => {
+    const currentTime = new Date().toISOString();
+    setSubmittedTime(currentTime);
     setStep("END");
     setIsTimerRunning(false);
   };
